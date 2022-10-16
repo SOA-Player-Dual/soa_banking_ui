@@ -28,6 +28,7 @@
         .container__item {
             width: 100%;
             height: fit-content;
+            height: -moz-max-content;
             background-color: rgb(255, 255, 255);
             padding: 16px 12px;
             border-radius: 10px;
@@ -113,6 +114,7 @@
     .tuition__container {
         width: 100%;
         height: fit-content;
+        height: -moz-max-content;
         background-color: rgb(255, 255, 255);
         padding: 16px 12px;
         border-radius: 8px;
