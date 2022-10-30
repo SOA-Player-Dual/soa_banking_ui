@@ -2,13 +2,6 @@ import classNames from 'classnames/bind';
 import { useState } from 'react';
 import OtpInput from 'react-otp-input';
 
-import { useDispatch, useSelector } from 'react-redux';
-import {
-    increment,
-    decrement,
-    incrementByAmount,
-} from '@/_redux/features/counter/counterSlice';
-
 import styles from './OTP.module.scss';
 
 const cx = classNames.bind(styles);
@@ -35,21 +28,8 @@ function OTP() {
         setOtp(otp);
     };
 
-    const dispatch = useDispatch();
-    const count = useSelector((state) => state.counter.value);
-
-    const handleClickIncrease = () => {
-        dispatch(incrementByAmount(10));
-    };
-
     return (
         <div className={cx('wrapper')}>
-            <div className='test'>
-                <button>{count}</button>
-                <button onClick={handleClickIncrease}>Inscrease</button>
-                <button>Decrease</button>
-            </div>
-
             <div className={cx('container')}>
                 <div className={cx('header')}>
                     <div className={cx('header__title')}>
