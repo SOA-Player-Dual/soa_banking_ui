@@ -1,12 +1,13 @@
 import classNames from 'classnames/bind';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import styles from './Header.module.scss';
 import logo from '@/assets/images/logo.png';
 
 const cx = classNames.bind(styles);
 
-function Tooltip() {
+function Tooltip({ headerRef }) {
+    const history = useNavigate();
     return (
         <div className={cx('tooltip')}>
             <div className={cx('info')}>
@@ -21,7 +22,7 @@ function Tooltip() {
                 </div>
             </div>
 
-            <Link to='/'>
+            <Link to='/' onClick={headerRef.current._tippy.hide()}>
                 <div className={cx('tooltip__item')}>
                     <i className={cx('fa-duotone', 'fa-credit-card')}></i>
                     <span>Tuition/Payment</span>
@@ -30,14 +31,17 @@ function Tooltip() {
 
             <hr />
 
-            <Link to='/login'>
-                <div className={cx('tooltip__item')}>
-                    <i
-                        className={cx('fa-regular', 'fa-right-from-bracket')}
-                    ></i>
-                    <span>Log out</span>
-                </div>
-            </Link>
+            {/* <Link to='/login'> */}
+            <div
+                className={cx('tooltip__item')}
+                onClick={() => {
+                    history('/login');
+                }}
+            >
+                <i className={cx('fa-regular', 'fa-right-from-bracket')}></i>
+                <span>Log out</span>
+            </div>
+            {/* </Link> */}
         </div>
     );
 }

@@ -22,6 +22,7 @@
 html {
     font-size: 1rem;
     scroll-behavior: smooth;
+    margin-right: calc(-1 * (100vw - 100%));
 }
 
 body {
@@ -156,4 +157,15 @@ body {
 
 .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root {
     line-height: 1rem;
+}
+
+// Custom Nprocess
+body {
+    #nprogress .bar {
+        background: var(--primary-color);
+    }
+
+    #nprogress .peg {
+        box-shadow: 0 0 10px var(--primary-color), 0 0 5px var(--primary-color);
+    }
 }

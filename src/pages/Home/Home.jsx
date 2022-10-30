@@ -1,19 +1,30 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import classNames from 'classnames/bind';
 import { Box, TextField } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { getTuitionById } from '@/api/tuitionApi';
 
 import styles from './Home.module.scss';
 import Modal from '@/components/Modal';
+import useEnterKeyListener from '@/hooks/useEnterKeyListener';
 
 const cx = classNames.bind(styles);
 
 function Home() {
-    const [paymentContainer, setPaymentContainer] = useState(false);
-
-    const [openModal, setOpenModal] = useState(false);
+    // Redux
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.user.user);
 
     const naviga = useNavigate();
+
+    const [tuitionId, setTuitionId] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [userTuiTionByID, setUserTuiTionByID] = useState(null);
+    const [paymentContainer, setPaymentContainer] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
         if (openModal) {
@@ -24,29 +35,46 @@ function Home() {
     }, [openModal]);
 
     const handleOpenModal = () => {
-        setOpenModal((prev) => !prev);
+        console.log('User balance: ', user.surplus);
+        console.log('Tuition fee: ', userTuiTionByID.tuition_fee);
+        console.log(user.surplus < userTuiTionByID.tuition_fee);
+        if (user.surplus < userTuiTionByID.tuition_fee) {
+            console.log('test');
+            toast.error('Please check your balance!');
+            return;
+        } else {
+            setOpenModal((prev) => !prev);
+        }
     };
 
     const handleCloseModal = () => {
         setOpenModal(false);
     };
 
-    const handleClickFoundInfo = () => {
-        setPaymentContainer((prev) => !prev);
+    useEnterKeyListener({
+        querySelectorToExecuteClick: '#btn_search',
+    });
+
+    const handleClickFoundTuitionByID = async () => {
+        if (!tuitionId) {
+            toast.error('Please enter tuition ID!');
+            return;
+        }
+        setLoading(true);
+        const data = await getTuitionById(tuitionId);
+
+        if (data) {
+            setUserTuiTionByID(data);
+            setPaymentContainer(true);
+            setLoading(false);
+        }
+
+        if (data && data.error !== 0) {
+            toast.error(data.error);
+            setLoading(false);
+            return;
+        }
     };
-
-    const tuiton = 5999000;
-    const balance = 10000000;
-
-    const tuition_format = tuiton.toLocaleString('it-IT', {
-        style: 'currency',
-        currency: 'VND',
-    });
-
-    const balace_format = balance.toLocaleString('it-IT', {
-        style: 'currency',
-        currency: 'VND',
-    });
 
     return (
         <div className={cx('wrapper')}>
@@ -70,7 +98,12 @@ function Home() {
                                 }}
                             >
                                 <TextField
-                                    value={'Ton Duc'}
+                                    value={
+                                        user.fullname
+                                            .split(' ')
+                                            .slice(0, -1)
+                                            .join(' ') || ''
+                                    }
                                     label='First name'
                                     variant='standard'
                                     sx={{ flexGrow: 1, marginBottom: '12px' }}
@@ -78,7 +111,7 @@ function Home() {
                                 />
 
                                 <TextField
-                                    value={'Thang'}
+                                    value={user.fullname.split(' ').pop() || ''}
                                     label='Last name'
                                     variant='standard'
                                     sx={{ flexGrow: 1 }}
@@ -93,7 +126,7 @@ function Home() {
                                 }}
                             >
                                 <TextField
-                                    value={'0983362923'}
+                                    value={user.phone || ''}
                                     label='Phone number'
                                     variant='standard'
                                     sx={{ flexGrow: 1, marginBottom: '12px' }}
@@ -108,7 +141,7 @@ function Home() {
                                 }}
                             >
                                 <TextField
-                                    value={'tonducthang@tdtu.edu.vn'}
+                                    value={user.email || ''}
                                     label='Email'
                                     variant='standard'
                                     sx={{ flexGrow: 1 }}
@@ -118,6 +151,7 @@ function Home() {
                         </div>
                     </div>
 
+                    {/* Get Student By ID */}
                     <div className={cx('container__item', 'tuition__id')}>
                         <div className={cx('title')}>Tuition student by ID</div>
 
@@ -130,25 +164,39 @@ function Home() {
                             required
                         >
                             <TextField
+                                value={tuitionId}
                                 label='Student ID'
                                 variant='outlined'
                                 type={'search'}
                                 sx={{ flexGrow: 1 }}
+                                onChange={(e) =>
+                                    setTuitionId(e.target.value.trim())
+                                }
                             />
                         </Box>
 
-                        <div className={cx('error')}>
-                            <span>Error appear hear!</span>
-                        </div>
-
                         <div className={cx('btn-search')}>
-                            <button onClick={handleClickFoundInfo}>
+                            <button
+                                id={'btn_search'}
+                                onClick={handleClickFoundTuitionByID}
+                            >
+                                {loading && (
+                                    <i
+                                        className={cx(
+                                            'fa-solid',
+                                            'fa-spinner',
+                                            'fa-spin-pulse',
+                                            'fa-spin-reverse'
+                                        )}
+                                    ></i>
+                                )}
                                 Enter
                             </button>
                         </div>
                     </div>
                 </div>
 
+                {/* Payment Container */}
                 {paymentContainer && (
                     <div className={cx('tuition__container')}>
                         <div className={cx('title')}>Tuition/Payment</div>
@@ -163,7 +211,9 @@ function Home() {
                                         }}
                                     >
                                         <TextField
-                                            value={'51900044'}
+                                            value={
+                                                userTuiTionByID.student_id || ''
+                                            }
                                             label='Student ID'
                                             variant='standard'
                                             sx={{ flexGrow: 1 }}
@@ -172,7 +222,9 @@ function Home() {
                                             }}
                                         />
                                         <TextField
-                                            value={'Ton Duc Thang'}
+                                            value={
+                                                userTuiTionByID.full_name || ''
+                                            }
                                             label='Student name'
                                             variant='standard'
                                             sx={{ flexGrow: 1 }}
@@ -182,10 +234,15 @@ function Home() {
                                         />
                                     </Box>
                                 </div>
+
+                                {/* Payment Container - Tuition */}
                                 <div className={cx('form-control')}>
                                     <Box sx={{ display: 'flex' }}>
                                         <TextField
-                                            value={tuiton}
+                                            value={
+                                                userTuiTionByID.tuition_fee ||
+                                                ''
+                                            }
                                             label='Tuition'
                                             type={'number'}
                                             variant='standard'
@@ -201,11 +258,13 @@ function Home() {
                             <div className={cx('tuition__payment')}>
                                 <div className={cx('tuition__payment--item')}>
                                     <span>Your balance:</span>
-                                    <span>{balace_format}</span>
+                                    <span>{user.surplus} VND</span>
                                 </div>
                                 <div className={cx('tuition__payment--item')}>
                                     <span>Semester Tuition:</span>
-                                    <span>{tuition_format}</span>
+                                    <span>
+                                        {userTuiTionByID.tuition_fee || 0} VND
+                                    </span>
                                 </div>
 
                                 <div className={cx('tuition__payment--item')}>
@@ -221,7 +280,7 @@ function Home() {
                                     )}
                                 >
                                     <span>Total tuition unpaid:</span>
-                                    {tuition_format}
+                                    {userTuiTionByID.tuition_fee || 0} VND
                                 </div>
                             </div>
                         </div>

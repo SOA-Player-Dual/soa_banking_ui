@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import Tippy from '@tippyjs/react';
@@ -11,6 +12,7 @@ import logo from '@/assets/images/logo.png';
 const cx = classNames.bind(styles);
 
 function Header() {
+    const headerRef = useRef(null);
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
@@ -26,9 +28,11 @@ function Header() {
                         Ton Duc Thang (19002022)
                     </div>
                     <Tippy
-                        content={<Tooltip />}
+                        ref={headerRef}
+                        content={<Tooltip headerRef={headerRef} />}
                         arrow={false}
                         interactive
+                        placement='bottom-start'
                         theme='light'
                         trigger={'click'}
                     >

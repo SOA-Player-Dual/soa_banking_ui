@@ -4,16 +4,23 @@ import App from '@/App';
 import GlobalStyles from '@/components/GlobalStyles';
 import reportWebVitals from './reportWebVitals';
 import { StyledEngineProvider } from '@mui/material/styles';
+import { Provider } from 'react-redux';
+import store from '@/_redux/store';
+import 'nprogress/nprogress.css';
+
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <React.StrictMode>
-        <StyledEngineProvider injectFirst>
-            <GlobalStyles>
-                <App />
-            </GlobalStyles>
-        </StyledEngineProvider>
-    </React.StrictMode>
+    <Provider store={store}>
+        <Router>
+            <StyledEngineProvider injectFirst>
+                <GlobalStyles>
+                    <App />
+                </GlobalStyles>
+            </StyledEngineProvider>
+        </Router>
+    </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
