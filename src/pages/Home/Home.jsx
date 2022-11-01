@@ -1,14 +1,20 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import classNames from 'classnames/bind';
+import { useState, useEffect } from 'react';
 import { Box, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getTuitionById } from '@/api/tuitionApi';
+import { refreshToken } from '@/api/userApi';
 
-import styles from './Home.module.scss';
+import { getTuitionById, sendOTP } from '@/api/tuitionApi';
+import {
+    setTuitionData,
+    resetTuitionData,
+} from '@/_redux/features/tuition/tuitionSlice';
+
 import Modal from '@/components/Modal';
+import styles from './Home.module.scss';
 import useEnterKeyListener from '@/hooks/useEnterKeyListener';
 
 const cx = classNames.bind(styles);
@@ -17,15 +23,75 @@ function Home() {
     // Redux
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.user);
+    let tuition = useSelector((state) => state.tuition.tuition_data);
+    const nullTuition = useSelector((state) => state.tuition.isNull);
 
-    const naviga = useNavigate();
+    const navigate = useNavigate();
 
-    const [tuitionId, setTuitionId] = useState('');
     const [loading, setLoading] = useState(false);
-    const [userTuiTionByID, setUserTuiTionByID] = useState(null);
-    const [paymentContainer, setPaymentContainer] = useState(false);
+    const [loadingModal, setLoadingModal] = useState(false);
+    const [tuitionId, setTuitionId] = useState('');
     const [openModal, setOpenModal] = useState(false);
+    const [paymentContainer, setPaymentContainer] = useState(false);
 
+    // Find student tuition by ID handle
+    useEnterKeyListener({
+        querySelectorToExecuteClick: '#btn_search',
+    });
+    const handleClickFoundTuitionByID = async () => {
+        if (!tuitionId) {
+            toast.error('Please enter tuition ID!');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            let res;
+            res = await getTuitionById(tuitionId);
+
+            if (res.error === 'Token invalid') {
+                refreshToken();
+                res = await getTuitionById(tuitionId);
+            }
+
+            if (!res.data) {
+                toast.error('Tuition ID not found!');
+                setLoading(false);
+                dispatch(resetTuitionData());
+                return;
+            }
+            dispatch(setTuitionData(res.data));
+            setPaymentContainer(true);
+            setLoading(false);
+        } catch (e) {
+            // toast.error(e.response.data.error);
+            // setLoading(false);
+            // settuition('');
+        }
+    };
+
+    // Submit tuition handle
+    const handleClickSubmitTuition = async () => {
+        try {
+            setLoadingModal(true);
+            let res;
+            res = await sendOTP(user.id, tuition.student_id);
+
+            if (res.error === 'Token invalid') {
+                await refreshToken();
+                res = await getTuitionById(user.id, tuition.student_id);
+            }
+
+            navigate(`/otp`, { state: { id: user.id } });
+            toast.success('OTP sent!');
+            setLoadingModal(false);
+        } catch (e) {
+            console.log(e);
+            setLoadingModal(false);
+        }
+    };
+
+    // Modal handling
     useEffect(() => {
         if (openModal) {
             document.body.style.overflow = 'hidden';
@@ -35,11 +101,7 @@ function Home() {
     }, [openModal]);
 
     const handleOpenModal = () => {
-        console.log('User balance: ', user.surplus);
-        console.log('Tuition fee: ', userTuiTionByID.tuition_fee);
-        console.log(user.surplus < userTuiTionByID.tuition_fee);
-        if (user.surplus < userTuiTionByID.tuition_fee) {
-            console.log('test');
+        if (user.surplus < tuition.tuition_fee) {
             toast.error('Please check your balance!');
             return;
         } else {
@@ -51,31 +113,6 @@ function Home() {
         setOpenModal(false);
     };
 
-    useEnterKeyListener({
-        querySelectorToExecuteClick: '#btn_search',
-    });
-
-    const handleClickFoundTuitionByID = async () => {
-        if (!tuitionId) {
-            toast.error('Please enter tuition ID!');
-            return;
-        }
-        setLoading(true);
-        const data = await getTuitionById(tuitionId);
-
-        if (data) {
-            setUserTuiTionByID(data);
-            setPaymentContainer(true);
-            setLoading(false);
-        }
-
-        if (data && data.error !== 0) {
-            toast.error(data.error);
-            setLoading(false);
-            return;
-        }
-    };
-
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
@@ -85,9 +122,6 @@ function Home() {
                             <span className={cx('title')}>
                                 Account information
                             </span>
-                            <div className={cx('status')}>
-                                Status: <span>Tuition debt</span>
-                            </div>
                         </div>
 
                         <div className={cx('form-control')}>
@@ -179,14 +213,14 @@ function Home() {
                             <button
                                 id={'btn_search'}
                                 onClick={handleClickFoundTuitionByID}
+                                disabled={loading}
                             >
                                 {loading && (
                                     <i
                                         className={cx(
                                             'fa-solid',
-                                            'fa-spinner',
-                                            'fa-spin-pulse',
-                                            'fa-spin-reverse'
+                                            'fa-circle-notch',
+                                            'fa-spin'
                                         )}
                                     ></i>
                                 )}
@@ -211,9 +245,7 @@ function Home() {
                                         }}
                                     >
                                         <TextField
-                                            value={
-                                                userTuiTionByID.student_id || ''
-                                            }
+                                            value={tuition.student_id || ''}
                                             label='Student ID'
                                             variant='standard'
                                             sx={{ flexGrow: 1 }}
@@ -222,9 +254,7 @@ function Home() {
                                             }}
                                         />
                                         <TextField
-                                            value={
-                                                userTuiTionByID.full_name || ''
-                                            }
+                                            value={tuition.full_name || ''}
                                             label='Student name'
                                             variant='standard'
                                             sx={{ flexGrow: 1 }}
@@ -239,10 +269,7 @@ function Home() {
                                 <div className={cx('form-control')}>
                                     <Box sx={{ display: 'flex' }}>
                                         <TextField
-                                            value={
-                                                userTuiTionByID.tuition_fee ||
-                                                ''
-                                            }
+                                            value={tuition.tuition_fee || ''}
                                             label='Tuition'
                                             type={'number'}
                                             variant='standard'
@@ -251,6 +278,30 @@ function Home() {
                                                 readOnly: true,
                                             }}
                                         />
+
+                                        {!nullTuition && (
+                                            <div className={cx('status')}>
+                                                Status:
+                                                {tuition.tuition_status ===
+                                                0 ? (
+                                                    <span
+                                                        className={cx(
+                                                            'status__debt'
+                                                        )}
+                                                    >
+                                                        Tuition debt
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        className={cx(
+                                                            'status__comp'
+                                                        )}
+                                                    >
+                                                        Tuition completed
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
                                     </Box>
                                 </div>
                             </div>
@@ -262,9 +313,7 @@ function Home() {
                                 </div>
                                 <div className={cx('tuition__payment--item')}>
                                     <span>Semester Tuition:</span>
-                                    <span>
-                                        {userTuiTionByID.tuition_fee || 0} VND
-                                    </span>
+                                    <span>{tuition.tuition_fee || 0} VND</span>
                                 </div>
 
                                 <div className={cx('tuition__payment--item')}>
@@ -280,14 +329,18 @@ function Home() {
                                     )}
                                 >
                                     <span>Total tuition unpaid:</span>
-                                    {userTuiTionByID.tuition_fee || 0} VND
+                                    {tuition.tuition_fee || 0} VND
                                 </div>
                             </div>
                         </div>
 
-                        <div className={cx('btn__submit')}>
-                            <button onClick={handleOpenModal}>Submit</button>
-                        </div>
+                        {tuition.tuition_status === 0 && (
+                            <div className={cx('btn__submit')}>
+                                <button onClick={handleOpenModal}>
+                                    Pay tuition
+                                </button>
+                            </div>
+                        )}
 
                         {openModal && (
                             <Modal
@@ -296,23 +349,56 @@ function Home() {
                                 setShowModal={handleCloseModal}
                             >
                                 <div className={cx('modal')}>
-                                    <p className={cx('modal__content')}>
-                                        Make sure you have fully checked the
-                                        payer information and the tuition fee
-                                        information
-                                        <span>
-                                            . We will not be responsible for any
-                                            omissions tuition.
-                                        </span>
-                                    </p>
+                                    <div className={cx('modal__container')}>
+                                        <div className={cx('title')}>
+                                            Tuition fee detail
+                                        </div>
+                                        <p>
+                                            StudentID: &nbsp;
+                                            {tuition.student_id}
+                                        </p>
+                                        <p>
+                                            Fullname: &nbsp;
+                                            {tuition.full_name}
+                                        </p>
+                                        <p>
+                                            Tuition: &nbsp;
+                                            {tuition.tuition_fee}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className={cx('modal__footer')}>
+                                            Make sure you have fully checked the
+                                            payer information and the tuition
+                                            fee information
+                                            <span>
+                                                . We will not be responsible for
+                                                any omissions tuition.
+                                            </span>
+                                        </p>
 
-                                    <div className={cx('modal__action')}>
-                                        <button onClick={handleCloseModal}>
-                                            Close
-                                        </button>
-                                        <button onClick={() => naviga('/otp')}>
-                                            Confirm
-                                        </button>
+                                        <div className={cx('modal__action')}>
+                                            <button onClick={handleCloseModal}>
+                                                Close
+                                            </button>
+                                            <button
+                                                onClick={
+                                                    handleClickSubmitTuition
+                                                }
+                                                disabled={loadingModal}
+                                            >
+                                                {loadingModal && (
+                                                    <i
+                                                        className={cx(
+                                                            'fa-solid',
+                                                            'fa-circle-notch',
+                                                            'fa-spin'
+                                                        )}
+                                                    ></i>
+                                                )}
+                                                Confirm
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </Modal>

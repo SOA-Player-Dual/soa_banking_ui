@@ -5,33 +5,39 @@ NProgress.configure({ showSpinner: false, trickleSpeed: 100 });
 
 const axiosClient = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
+    responseType: 'json',
+    withCredentials: true,
 });
 
-// Add a request interceptor
 axiosClient.interceptors.request.use(
     function (config) {
         NProgress.start();
-        // Do something before request is sent
+
+        // console.log('Log config:', config);
+
         return config;
     },
     function (error) {
-        // Do something with request error
         return Promise.reject(error);
     }
 );
 
-// Add a response interceptor
 axiosClient.interceptors.response.use(
     function (response) {
+        // console.log(response.acessToken);
         NProgress.done();
-        // Any status code that lie within the range of 2xx cause this function to trigger
-        // Do something with response data
+
+        console.log('Log response:', response.data);
+
+        // return response.data;
         return response && response.data ? response.data : response;
     },
     function (error) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
         NProgress.done();
+
+        // refresh token
+
+        // return Promise.reject(error);
         return error && error.response && error.response.data
             ? error.response.data
             : Promise.reject(error);

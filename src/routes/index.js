@@ -12,7 +12,7 @@ const routes = [
         component: Login,
         layout: null,
     },
-    { path: '/otp', component: OTP },
+    { path: `/otp`, component: OTP },
 ];
 
 export default routes;

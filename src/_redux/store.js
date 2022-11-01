@@ -4,9 +4,11 @@ import { combineReducers } from 'redux';
 import { persistReducer } from 'redux-persist';
 
 import userReducer from '@/_redux/features/user/userSlice';
+import tuitionSlice from '@/_redux/features/tuition/tuitionSlice';
 
 const reducers = combineReducers({
     user: userReducer,
+    tuition: tuitionSlice,
 });
 
 const persistConfig = {

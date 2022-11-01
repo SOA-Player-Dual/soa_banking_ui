@@ -4,6 +4,7 @@ import classNames from 'classnames/bind';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light.css';
+import { useSelector } from 'react-redux';
 
 import styles from './Header.module.scss';
 import Tooltip from './Tooltip';
@@ -13,6 +14,9 @@ const cx = classNames.bind(styles);
 
 function Header() {
     const headerRef = useRef(null);
+
+    const user = useSelector((state) => state.user.user);
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
@@ -24,9 +28,7 @@ function Header() {
                 </Link>
 
                 <div className={cx('action')}>
-                    <div className={cx('action__hello')}>
-                        Ton Duc Thang (19002022)
-                    </div>
+                    <div className={cx('action__hello')}>{user.fullname}</div>
                     <Tippy
                         ref={headerRef}
                         content={<Tooltip headerRef={headerRef} />}

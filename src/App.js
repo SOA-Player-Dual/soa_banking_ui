@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import DefaultLayout from '@/layouts/DefaultLayout';
+
 import routes from '@/routes';
 
 function App() {

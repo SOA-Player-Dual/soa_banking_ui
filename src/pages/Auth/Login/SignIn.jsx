@@ -1,33 +1,33 @@
-import { useState, useEffect, useRef } from 'react';
-import classNames from 'classnames/bind';
 import { toast } from 'react-toastify';
+import classNames from 'classnames/bind';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+
+import { Login, refreshToken } from '@/api/userApi';
 import { login } from '@/_redux/features/user/userSlice';
 
 import styles from './SignIn.module.scss';
-import { Login } from '@/api/userApi';
-import useEnterKeyListener from '@/hooks/useEnterKeyListener';
-
-import login_img from '@/assets/images/login.png';
 import logo from '@/assets/images/logo.png';
 import tip_image from '@/assets/images/tip.png';
-import { useNavigate } from 'react-router-dom';
+import login_img from '@/assets/images/login.png';
+import useEnterKeyListener from '@/hooks/useEnterKeyListener';
 
 const cx = classNames.bind(styles);
 
 function SignIn() {
-    // useEffect(() => {
-    //     document.title = 'Login';
-    // });
+    useEffect(() => {
+        document.title = 'Login';
+    }, []);
 
     const dispatch = useDispatch();
-
     const navigate = useNavigate();
+
     const userInputRef = useRef(null);
     const passwordInputRef = useRef(null);
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEnterKeyListener({
         querySelectorToExecuteClick: '#submitLoginBtn',
@@ -35,43 +35,44 @@ function SignIn() {
 
     const handleSubmit = async () => {
         if (!username) {
-            toast.error('Invalid username!');
+            toast.error('Please enter username!');
             userInputRef.current.focus();
             return;
         }
 
         if (!password) {
-            toast.error('Invalid password!');
+            toast.error('Please enter password!');
             passwordInputRef.current.focus();
             return;
         }
 
         try {
-            const res = await Login(username, password);
-            // console.log('Data: ', res.data.data);
+            setLoading(true);
+            let res;
+            res = await Login(username, password);
 
-            if (res.status !== 200) {
-                toast.error(res.error);
-                // console.log('Error: ', data.error);
+            if (res.error === 'Token invalid') {
+                refreshToken();
+                res = await Login(username, password);
+                setLoading(false);
+            }
+
+            if (res.error) {
+                toast.error('Invalid username or password!');
+                setLoading(false);
                 return;
             }
 
-            dispatch(login(res.data.data));
+            dispatch(login(res.data));
+            setLoading(false);
             navigate('/');
             toast.success('Login successfully!');
         } catch (error) {
-            toast.error(error.message);
+            refreshToken();
+            await Login(username, password);
+            setLoading(false);
+            console.log('Test loading: ', loading);
         }
-
-        // console.log('Check>>: ', data.status);
-
-        // if (data && data.status !== 200) {
-        //     toast.error('Invalid username or password!');
-        //     return;
-        // }
-
-        // navigate('/');
-        // toast.success('Login successfully!');
     };
 
     return (
@@ -95,31 +96,38 @@ function SignIn() {
                         </div>
 
                         <input
-                            ref={userInputRef}
-                            value={username}
-                            // name={'username'}
-                            className={cx('form-control')}
                             type={'text'}
+                            value={username}
+                            ref={userInputRef}
                             placeholder={'Email'}
+                            className={cx('form-control')}
                             onChange={(e) => setUsername(e.target.value.trim())}
                         />
 
                         <input
-                            ref={passwordInputRef}
                             value={password}
-                            className={cx('form-control')}
                             type={'password'}
+                            ref={passwordInputRef}
                             placeholder={'Password'}
-                            // name={'password'}
+                            className={cx('form-control')}
                             onChange={(e) => setPassword(e.target.value.trim())}
                         />
 
                         <button
                             id={'submitLoginBtn'}
-                            className={cx('form-control', 'form-btn')}
                             onClick={handleSubmit}
-                            // disabled={username === '' || password === ''}
+                            className={cx('form-control', 'form-btn')}
+                            disabled={loading}
                         >
+                            {loading && (
+                                <i
+                                    className={cx(
+                                        'fa-solid',
+                                        'fa-circle-notch',
+                                        'fa-spin'
+                                    )}
+                                ></i>
+                            )}
                             Sign in
                         </button>
 

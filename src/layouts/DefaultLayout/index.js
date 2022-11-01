@@ -1,11 +1,13 @@
 import Header from './Header';
 
+import PrivateRoute from '@/components/PrivateRoute';
+
 function DefaultLayout({ children }) {
     return (
-        <div>
+        <PrivateRoute>
             <Header />
             <div>{children}</div>
-        </div>
+        </PrivateRoute>
     );
 }
 
