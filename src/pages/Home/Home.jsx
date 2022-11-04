@@ -307,14 +307,18 @@ function Home() {
                                         className={cx('tuition__payment--item')}
                                     >
                                         <span>Your balance:</span>
-                                        <span>{user.surplus} VND</span>
+                                        <span>
+                                            {user?.surplus.toLocaleString()} VND
+                                        </span>
                                     </div>
                                     <div
                                         className={cx('tuition__payment--item')}
                                     >
                                         <span>Semester Tuition:</span>
                                         <span>
-                                            {tuition.tuition_fee || 0} VND
+                                            {tuition?.tuition_fee.toLocaleString() ||
+                                                0}
+                                            &nbsp; VND
                                         </span>
                                     </div>
 
@@ -334,14 +338,14 @@ function Home() {
                                     >
                                         <span>Total tuition unpaid:</span>
                                         {tuition.tuition_status === 0
-                                            ? tuition.tuition_fee
+                                            ? tuition?.tuition_fee.toLocaleString()
                                             : 0}{' '}
                                         VND
                                     </div>
                                 </div>
                             </div>
 
-                            {tuition.tuition_status === 0 && (
+                            {tuition?.tuition_status === 0 && (
                                 <div className={cx('btn__submit')}>
                                     <button onClick={handleOpenModal}>
                                         Pay tuition
@@ -365,18 +369,19 @@ function Home() {
                                             >
                                                 <p>
                                                     StudentID: &nbsp;
-                                                    {tuition.student_id}
+                                                    {tuition?.student_id}
                                                 </p>
                                                 <hr />
                                                 <p>
                                                     Fullname: &nbsp;
-                                                    {tuition.full_name}
+                                                    {tuition?.full_name}
                                                 </p>
 
                                                 <hr />
                                                 <p>
                                                     Tuition: &nbsp;
-                                                    {tuition.tuition_fee}
+                                                    {tuition?.tuition_fee.toLocaleString()}
+                                                    &nbsp;VND
                                                 </p>
                                             </div>
                                         </div>

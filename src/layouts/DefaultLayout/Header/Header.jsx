@@ -17,6 +17,8 @@ function Header() {
 
     const user = useSelector((state) => state.user.user);
 
+    const money = user?.surplus.toLocaleString();
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
@@ -28,7 +30,9 @@ function Header() {
                 </Link>
 
                 <div className={cx('action')}>
-                    <div className={cx('action__hello')}>{user.fullname}</div>
+                    <div className={cx('action__hello')}>
+                        {user.fullname}&nbsp;({money} VND)
+                    </div>
                     <Tippy
                         ref={headerRef}
                         content={<Tooltip headerRef={headerRef} />}

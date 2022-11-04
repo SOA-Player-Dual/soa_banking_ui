@@ -71,11 +71,14 @@ function OTP() {
             res = await verifyOTP(user.id, otp);
         }
 
-        console.log('Check res 2', res);
-        console.log('Check res 3', res.data.error);
+        if (res?.status === 400) {
+            toast.error('Token invalid or expired. Please try again.');
+            setLoading(false);
+            return;
+        }
 
         if (res?.data?.error) {
-            toast.error('Token invalid or expired. Please try again.');
+            toast.error(res.data.error);
             setLoading(false);
             return;
         }
