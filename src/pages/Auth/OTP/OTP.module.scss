@@ -94,28 +94,42 @@
 
     .footer {
         display: flex;
-        flex-direction: column;
         text-align: center;
         justify-content: center;
+
+        .footer__item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
         .footer__item--des {
             color: rgba(22, 24, 35, 0.4);
         }
 
-        button {
+        .resend-btn {
             height: 35px;
             width: 100px;
-            border-radius: 8px;
-            border: none;
-            outline: none;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-content: center;
+            button {
+                height: 100%;
+                width: 100%;
+                border-radius: 8px;
+                border: none;
+                outline: none;
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--primary-color);
+                background-color: transparent;
 
-            &:hover {
-                cursor: pointer;
-                background-color: rgba(22, 24, 35, 0.08);
+                &:hover {
+                    cursor: pointer;
+                    background-color: rgba(22, 24, 35, 0.08);
+                }
             }
         }
     }

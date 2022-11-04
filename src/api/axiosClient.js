@@ -27,8 +27,6 @@ axiosClient.interceptors.response.use(
         // console.log(response.acessToken);
         NProgress.done();
 
-        console.log('Log response:', response.data);
-
         // return response.data;
         return response && response.data ? response.data : response;
     },
@@ -37,10 +35,9 @@ axiosClient.interceptors.response.use(
 
         // refresh token
 
-        // return Promise.reject(error);
-        return error && error.response && error.response.data
-            ? error.response.data
-            : Promise.reject(error);
+        // return Promise.reject(error)
+
+        return error && error.response ? error.response : Promise.reject(error);
     }
 );
 

@@ -1,8 +1,7 @@
 import axios from '@/api/axiosClient';
 
-const getTuitionById = (student_id) => {
+const getTuitionById = async (student_id) => {
     return axios.get(`v1/account/tuition/${student_id}`);
-    // return axios.get(`/get-tuition?student_id=${student_id}`);
 };
 
 const sendOTP = (id, student_id) => {
@@ -17,4 +16,8 @@ const getNewSurplus = (userID) => {
     return axios.get(`v1/account/surplus/${userID}`);
 };
 
-export { getTuitionById, sendOTP, verifyOTP, getNewSurplus };
+const getTuitionHistory = () => {
+    return axios.get(`v1/account/history`);
+};
+
+export { getTuitionById, sendOTP, verifyOTP, getNewSurplus, getTuitionHistory };

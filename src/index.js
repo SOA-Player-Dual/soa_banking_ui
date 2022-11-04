@@ -19,11 +19,11 @@ root.render(
     <Provider store={store}>
         <PersistGate persistor={persistor}>
             <Router>
-                <StyledEngineProvider injectFirst>
-                    <GlobalStyles>
+                <GlobalStyles>
+                    <StyledEngineProvider injectFirst>
                         <App />
-                    </GlobalStyles>
-                </StyledEngineProvider>
+                    </StyledEngineProvider>
+                </GlobalStyles>
             </Router>
         </PersistGate>
     </Provider>

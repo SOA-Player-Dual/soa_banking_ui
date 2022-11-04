@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '@/_redux/features/user/userSlice';
 import { Logout, refreshToken } from '@/api/userApi';
+import { getTuitionHistory } from '@/api/tuitionApi';
 import { toast } from 'react-toastify';
-import { resetTuitionData } from '@/_redux/features/tuition/tuitionSlice';
+import {
+    resetTuitionData,
+    setTuitionHistory,
+} from '@/_redux/features/tuition/tuitionSlice';
 
 import styles from './Header.module.scss';
 import logo from '@/assets/images/logo.png';
@@ -17,21 +21,33 @@ function Tooltip({ headerRef }) {
     const user = useSelector((state) => state.user.user);
     const dispatch = useDispatch();
 
-    const handleLogout = async () => {
-        try {
-            let res;
-            res = await Logout();
-            if (res.error === 'Token invalid') {
-                refreshToken();
-                res = await Logout();
-            }
-            dispatch(resetTuitionData());
-            dispatch(logout());
-            history('/login');
-            toast.success('Logout successfully!');
-        } catch (e) {
-            console.log(e);
+    const handleRedirectHistoryPayment = async () => {
+        let res = await getTuitionHistory();
+
+        console.log('Test response', res);
+
+        if (res.status === 401) {
+            res = await refreshToken();
+            res = await getTuitionHistory();
         }
+
+        headerRef.current._tippy.hide();
+        dispatch(setTuitionHistory(res.data));
+        history('/history-payment');
+    };
+
+    const handleLogout = async () => {
+        let res = await Logout();
+
+        if (res.status === 401) {
+            res = await refreshToken();
+            res = await Logout();
+        }
+        dispatch(resetTuitionData());
+        dispatch(logout());
+        dispatch(setTuitionHistory([]));
+        history('/login');
+        toast.success('Logout successfully!');
     };
 
     return (
@@ -48,6 +64,14 @@ function Tooltip({ headerRef }) {
                         {user.phone}
                     </span>
                 </div>
+            </div>
+
+            <div
+                className={cx('tooltip__item')}
+                onClick={handleRedirectHistoryPayment}
+            >
+                <i className={cx('fa-regular', ' fa-rectangle-history')}></i>
+                <span>History payment</span>
             </div>
 
             <hr />

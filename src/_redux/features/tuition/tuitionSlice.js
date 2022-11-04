@@ -10,6 +10,9 @@ const tuitionSlice = createSlice({
             tuition_status: '',
         },
         isNull: true,
+        tuition_history: {
+            list: [],
+        },
     },
 
     reducers: {
@@ -31,8 +34,27 @@ const tuitionSlice = createSlice({
             };
             state.isNull = true;
         },
+        setTuitionHistory: (state, action) => {
+            console.log(action.payload);
+            state.tuition_history = {
+                list: action?.payload?.data,
+            };
+        },
+
+        resetTuitionHistory: (state) => {
+            state.tuition_history = {
+                ammount: '',
+                content: '',
+                created_at: '',
+            };
+        },
     },
 });
 
-export const { setTuitionData, resetTuitionData } = tuitionSlice.actions;
+export const {
+    setTuitionData,
+    resetTuitionData,
+    setTuitionHistory,
+    resetTuitionHistory,
+} = tuitionSlice.actions;
 export default tuitionSlice.reducer;
