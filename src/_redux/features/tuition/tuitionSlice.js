@@ -35,7 +35,6 @@ const tuitionSlice = createSlice({
             state.isNull = true;
         },
         setTuitionHistory: (state, action) => {
-            console.log(action.payload);
             state.tuition_history = {
                 list: action?.payload?.data,
             };

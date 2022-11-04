@@ -13,8 +13,6 @@ axiosClient.interceptors.request.use(
     function (config) {
         NProgress.start();
 
-        // console.log('Log config:', config);
-
         return config;
     },
     function (error) {
@@ -24,7 +22,6 @@ axiosClient.interceptors.request.use(
 
 axiosClient.interceptors.response.use(
     function (response) {
-        // console.log(response.acessToken);
         NProgress.done();
 
         // return response.data;
@@ -36,6 +33,10 @@ axiosClient.interceptors.response.use(
         // refresh token
 
         // return Promise.reject(error)
+
+        if (error.code === 'ERR_NETWORK') {
+            return null;
+        }
 
         return error && error.response ? error.response : Promise.reject(error);
     }

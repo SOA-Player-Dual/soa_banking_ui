@@ -23,10 +23,8 @@ function Tooltip({ headerRef }) {
 
     const handleRedirectHistoryPayment = async () => {
         let res = await getTuitionHistory();
-
-        console.log('Test response', res);
-
-        if (res.status === 401) {
+        console.log('test res', res);
+        if (res?.status === 401) {
             res = await refreshToken();
             res = await getTuitionHistory();
         }
@@ -39,7 +37,7 @@ function Tooltip({ headerRef }) {
     const handleLogout = async () => {
         let res = await Logout();
 
-        if (res.status === 401) {
+        if (res?.status === 401) {
             res = await refreshToken();
             res = await Logout();
         }
@@ -58,10 +56,10 @@ function Tooltip({ headerRef }) {
                 </div>
                 <div className={cx('info__item')}>
                     <span className={cx('info__item--name')}>
-                        {user.fullname}
+                        {user?.fullname}
                     </span>
                     <span className={cx('info__item--phone')}>
-                        {user.phone}
+                        {user?.phone}
                     </span>
                 </div>
             </div>

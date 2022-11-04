@@ -18,7 +18,7 @@ const cx = classNames.bind(styles);
 
 function HistoryPayment() {
     const tuitionHistory = useSelector(
-        (state) => state.tuition.tuition_history.list
+        (state) => state?.tuition?.tuition_history?.list
     );
 
     return (
@@ -32,7 +32,7 @@ function HistoryPayment() {
                         <CTableRow color={'info'}>
                             <CTableHeaderCell scope='col'>#</CTableHeaderCell>
                             <CTableHeaderCell scope='col'>
-                                Amount
+                                Tuition fee
                             </CTableHeaderCell>
                             <CTableHeaderCell scope='col'>
                                 Content
@@ -48,19 +48,19 @@ function HistoryPayment() {
                     <CTableBody>
                         {tuitionHistory.map((data, index) => {
                             const timestamp = Math.floor(
-                                new Date(data.created_at).getTime() / 1000
+                                new Date(data?.created_at).getTime() / 1000
                             );
 
                             return (
-                                <CTableRow key={data.id}>
+                                <CTableRow key={data?.id}>
                                     <CTableHeaderCell scope='row'>
                                         {index + 1}
                                     </CTableHeaderCell>
                                     <CTableDataCell>
-                                        {data.amount}
+                                        {data?.amount?.toLocaleString()} VND
                                     </CTableDataCell>
                                     <CTableDataCell>
-                                        {data.content}
+                                        {data?.content}
                                     </CTableDataCell>
                                     <CTableDataCell>
                                         {moment

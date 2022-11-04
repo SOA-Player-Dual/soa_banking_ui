@@ -12,6 +12,8 @@ import Loading from '@/layouts/DefaultLayout/Loading';
 import logo from '@/assets/images/logo.png';
 import tip_image from '@/assets/images/tip.png';
 import login_img from '@/assets/images/login.png';
+import Modal from '@/layouts/DefaultLayout/Modal';
+import error_img from '@/assets/images/error.png';
 import useEnterKeyListener from '@/hooks/useEnterKeyListener';
 
 const cx = classNames.bind(styles);
@@ -29,6 +31,7 @@ function SignIn() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [modal, setModal] = useState(false);
 
     useEnterKeyListener({
         querySelectorToExecuteClick: '#submitLoginBtn',
@@ -51,6 +54,12 @@ function SignIn() {
 
         let res = await Login(username, password);
 
+        if (res === null) {
+            setModal(true);
+            setLoading(false);
+            return;
+        }
+
         if (res.status === 401) {
             res = await refreshToken();
             res = await Login(username, password);
@@ -70,6 +79,40 @@ function SignIn() {
 
     return (
         <>
+            <Modal
+                title={'Opps! Some thing went wrong!'}
+                showModal={modal}
+                setShowModal={() => setModal(false)}
+            >
+                <div className={cx('modal__container')}>
+                    Maybe your device is not connected to the internet or
+                    <a href='https://www.termsfeed.com/blog/privacy-policy-url/'>
+                        {' '}
+                        privacy policy https
+                    </a>
+                    . If you want to try accessing the system, please go to the
+                    link below:
+                    <br />
+                    <a
+                        href='https://13.215.191.9'
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        https://midterm.fix-network.com
+                    </a>
+                    <div>
+                        Step: 1. Click on the link above
+                        <br />
+                        Step: 2. Click on the "Advanced" button
+                        <br />
+                        Step: 3. Click on the "Process to
+                        https://13.215.191.9(unsafe)"
+                        <br />
+                        Step 4. Comeback to this page and try again
+                    </div>
+                    <img src={error_img} alt='' />
+                </div>
+            </Modal>
             {loading && <Loading />}
             <div className={cx('wrapper')}>
                 <div className={cx('container')}>

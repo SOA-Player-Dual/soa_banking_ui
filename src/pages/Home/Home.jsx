@@ -76,6 +76,18 @@ function Home() {
             res = await getTuitionById(user.id, tuition.student_id);
         }
 
+        if (res?.status === 403) {
+            toast.error('Tuition is in the process of being paid!');
+            setLoadingModal(false);
+            return;
+        }
+
+        if (res?.data?.error) {
+            toast.error(res?.data?.error);
+            setLoadingModal(false);
+            return;
+        }
+
         navigate(`/otp`, { state: { id: user.id } });
         toast.success('OTP sent!');
         setLoadingModal(false);
@@ -91,7 +103,7 @@ function Home() {
     }, [openModal]);
 
     const handleOpenModal = () => {
-        if (user.surplus < tuition.tuition_fee) {
+        if (user?.surplus < tuition?.tuition_fee) {
             toast.error('Please check your balance!');
             return;
         } else {
@@ -126,7 +138,7 @@ function Home() {
                                     <TextField
                                         value={
                                             user?.fullname
-                                                .split(' ')
+                                                ?.split(' ')
                                                 .slice(0, -1)
                                                 .join(' ') || ''
                                         }
@@ -141,7 +153,7 @@ function Home() {
 
                                     <TextField
                                         value={
-                                            user?.fullname.split(' ').pop() ||
+                                            user?.fullname?.split(' ').pop() ||
                                             ''
                                         }
                                         label='First name'
@@ -158,7 +170,7 @@ function Home() {
                                     }}
                                 >
                                     <TextField
-                                        value={user.phone || ''}
+                                        value={user?.phone || ''}
                                         label='Phone number'
                                         variant='standard'
                                         sx={{
@@ -176,7 +188,7 @@ function Home() {
                                     }}
                                 >
                                     <TextField
-                                        value={user.email || ''}
+                                        value={user?.email || ''}
                                         label='Email'
                                         variant='standard'
                                         sx={{ flexGrow: 1 }}
@@ -239,7 +251,9 @@ function Home() {
                                             }}
                                         >
                                             <TextField
-                                                value={tuition.student_id || ''}
+                                                value={
+                                                    tuition?.student_id || ''
+                                                }
                                                 label='Student ID'
                                                 variant='standard'
                                                 sx={{ flexGrow: 1 }}
@@ -248,7 +262,7 @@ function Home() {
                                                 }}
                                             />
                                             <TextField
-                                                value={tuition.full_name || ''}
+                                                value={tuition?.full_name || ''}
                                                 label='Student name'
                                                 variant='standard'
                                                 sx={{ flexGrow: 1 }}
@@ -264,7 +278,7 @@ function Home() {
                                         <Box sx={{ display: 'flex' }}>
                                             <TextField
                                                 value={
-                                                    tuition.tuition_fee || ''
+                                                    tuition?.tuition_fee || ''
                                                 }
                                                 label='Tuition'
                                                 type={'number'}
@@ -278,7 +292,7 @@ function Home() {
                                             {!nullTuition && (
                                                 <div className={cx('status')}>
                                                     Status:
-                                                    {tuition.tuition_status ===
+                                                    {tuition?.tuition_status ===
                                                     0 ? (
                                                         <span
                                                             className={cx(
@@ -308,7 +322,8 @@ function Home() {
                                     >
                                         <span>Your balance:</span>
                                         <span>
-                                            {user?.surplus.toLocaleString()} VND
+                                            {user?.surplus?.toLocaleString()}
+                                            &nbsp; VND
                                         </span>
                                     </div>
                                     <div
@@ -316,7 +331,7 @@ function Home() {
                                     >
                                         <span>Semester Tuition:</span>
                                         <span>
-                                            {tuition?.tuition_fee.toLocaleString() ||
+                                            {tuition?.tuition_fee?.toLocaleString() ||
                                                 0}
                                             &nbsp; VND
                                         </span>
@@ -337,10 +352,10 @@ function Home() {
                                         )}
                                     >
                                         <span>Total tuition unpaid:</span>
-                                        {tuition.tuition_status === 0
-                                            ? tuition?.tuition_fee.toLocaleString()
-                                            : 0}{' '}
-                                        VND
+                                        {tuition?.tuition_status === 0
+                                            ? tuition?.tuition_fee?.toLocaleString()
+                                            : 0}
+                                        &nbsp;VND
                                     </div>
                                 </div>
                             </div>
@@ -380,7 +395,7 @@ function Home() {
                                                 <hr />
                                                 <p>
                                                     Tuition: &nbsp;
-                                                    {tuition?.tuition_fee.toLocaleString()}
+                                                    {tuition?.tuition_fee?.toLocaleString()}
                                                     &nbsp;VND
                                                 </p>
                                             </div>

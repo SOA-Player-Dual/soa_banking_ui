@@ -40,8 +40,6 @@ function OTP() {
     const [loading, setLoading] = useState(false);
     const [loadingResend, setLoadingResend] = useState(false);
 
-    console.log(otp);
-
     const user = useSelector((state) => state.user.user);
     const studentID = useSelector(
         (state) => state.tuition.tuition_data.student_id
@@ -78,7 +76,7 @@ function OTP() {
         }
 
         if (res?.data?.error) {
-            toast.error(res.data.error);
+            toast.error(res?.data?.error);
             setLoading(false);
             return;
         }
@@ -86,7 +84,7 @@ function OTP() {
         toast.success('Tuition payment successfully!');
 
         let updateBalanceUser = await getNewSurplus(user.id);
-        console.log('New balance:', updateBalanceUser.data.surplus);
+
         if (updateBalanceUser?.status === 401) {
             updateBalanceUser = await refreshToken();
             updateBalanceUser = await getNewSurplus(user.id);
@@ -100,10 +98,11 @@ function OTP() {
         setLoadingResend(true);
         let res = await sendOTP(user.id, studentID);
 
-        if (res.status === 401) {
+        if (res?.status === 401) {
             res = await refreshToken();
             res = await sendOTP(user.id, studentID);
         }
+
         toast.success('OTP re-sent successfully!');
         setLoadingResend(false);
     };
@@ -120,7 +119,7 @@ function OTP() {
                         <p className={cx('header__des')}>
                             We have sent a verification code to your email
                             &nbsp;
-                            <span>{user.email}</span>.
+                            <span>{user?.email}</span>.
                         </p>
                     </div>
 

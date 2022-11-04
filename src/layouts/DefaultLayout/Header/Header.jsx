@@ -17,7 +17,7 @@ function Header() {
 
     const user = useSelector((state) => state.user.user);
 
-    const money = user?.surplus.toLocaleString();
+    const money = user?.surplus?.toLocaleString();
 
     return (
         <div className={cx('wrapper')}>
@@ -31,7 +31,7 @@ function Header() {
 
                 <div className={cx('action')}>
                     <div className={cx('action__hello')}>
-                        {user.fullname}&nbsp;({money} VND)
+                        {user?.fullname}&nbsp;({money} VND)
                     </div>
                     <Tippy
                         ref={headerRef}
