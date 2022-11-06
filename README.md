@@ -8,7 +8,9 @@
  - Run on localhost: 3000 (by https: `https://localhost:3000/`)
 
 # Issue
- *Unable to resolve dependency tree error when installing npm packages
+ ```diff
+- Unable to resolve dependency tree error when installing npm packages
+```
  - Fix: npm install --save --legacy-peer-deps 
  
 # Project manual
