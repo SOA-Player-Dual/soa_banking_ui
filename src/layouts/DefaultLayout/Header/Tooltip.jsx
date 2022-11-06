@@ -23,7 +23,7 @@ function Tooltip({ headerRef }) {
 
     const handleRedirectHistoryPayment = async () => {
         let res = await getTuitionHistory();
-        console.log('test res', res);
+
         if (res?.status === 401) {
             res = await refreshToken();
             res = await getTuitionHistory();
