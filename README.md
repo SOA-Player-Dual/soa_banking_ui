@@ -6,6 +6,10 @@
  - npm install
  - npm start
  - Run on localhost: 3000 (by https: `https://localhost:3000/`)
+
+# Issue
+ *Unable to resolve dependency tree error when installing npm packages
+ - Fix: npm install --save --legacy-peer-deps 
  
 # Project manual
  - Browser: Chorme (https work best on Chorme, please dont try another browser because cookie unable set on browser)
