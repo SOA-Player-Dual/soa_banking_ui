@@ -25,6 +25,6 @@
 - Unable to resolve dependency tree error when installing npm packages
 ```
  - Description error: Perhaps `resolve dependency` will be happen on another local.
- - Fix: npm install --save --legacy-peer-deps 
- - Or: npm install --force
+ - Fix: npm install --force
+ - Or: npm install --legacy-peer-deps 
  
