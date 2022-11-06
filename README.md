@@ -8,8 +8,8 @@
  - npm: 8.19.3
  
 # Run
- - npm install
- - npm start (please waiting for a minutes for run server on some local: windowOS - WLS2)
+ - `npm install`
+ - `npm start` (please waiting for a minutes for run server on some local, eg: windowOS - WLS2)
  - Run on localhost: 3000 (by https: `https://localhost:3000/`)
 
 # Project manual
