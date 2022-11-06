@@ -9,7 +9,7 @@
  
 # Run
  - npm install
- - npm start
+ - npm start (please waiting for a minutes for run server on some local: windowOS - WLS2)
  - Run on localhost: 3000 (by https: `https://localhost:3000/`)
 
 # Project manual
