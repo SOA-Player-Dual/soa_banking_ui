@@ -1,6 +1,6 @@
 # Clone project
  - copy https link this project
- - git clone https://github.com/SOA-Player-Dual/soa_banking_ui.git
+ - git clone `https://github.com/SOA-Player-Dual/soa_banking_ui.git`
 
 # Environment
  - Node: v18.8.0
