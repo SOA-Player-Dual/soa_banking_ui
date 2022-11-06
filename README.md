@@ -13,7 +13,7 @@
  - Run on localhost: 3000 (by https: `https://localhost:3000/`)
 
 # Project manual
- - Browser: Chorme (https work best on Chorme, please dont try another browser because cookie unable set on browser)
+ - Browser: Chorme (https work best on Chorme, encourage don't try another browser because cookie unable set on browser (like safari))
  - You need access https on your local by step:
    + Access `https://13.215.191.9/`
    + Click advance button on warning screen
